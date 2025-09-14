@@ -56,7 +56,7 @@ function mostrarMenu() {
     let mensaje = "Elija una opcion: ";
     mensaje += "\n1) Transferencia ";
     mensaje += "\n2) Plazo fijo ";
-    mensaje += "\n3) Ver Saldo ";
+    mensaje += "\n3) Probar suerte ";
     mensaje += "\n4) Ver Bitacora ";
     mensaje += "\n5) Salir ";
 
@@ -69,7 +69,7 @@ function mostrarMenu() {
         plazoFijo();
         break;
       case "3":
-        VerSaldo();
+        numeroAleatorio();
         break;
       case "4":
         verBitacora();
@@ -107,4 +107,108 @@ function getCuentaCliente(origen, cliente) {
     return cliente.getCuentaDolares();
   }
   return false;
+}
+
+function tranferi(monto, cuentaOrigen, cuentaDestino) {
+  if (cuentaOrigen && cuentaDestino) {
+    if (cuentaOrigen.getClase() === cuentaDestino.getClase()) {
+      if (cuentaOrigen.tieneSaldo(monto)) {
+        cuentaOrigen.debitar(monto);
+
+        cuentaDestino.acreditar(monto);
+
+        alert("Transferencia exitosa");
+
+        bitacora.addRegistro(
+          new RegistroBit(
+            "Transferencia exitosa" +
+              cuentaOrigen.getDescripcion() +
+              " a " +
+              cuentaDestino.getDescripcion(),
+            loginActual
+          )
+        );
+      } else {
+        alert("Saldo insuficiente.");
+      }
+    } else {
+      alert("Las cuentas no son de la misma clase");
+    }
+  } else {
+    alert("No se encontro cuenta de origen y/o destino ");
+  }
+}
+
+function plazoFijo() {
+  let monto = parseFloat(prompt("Ingrese monto"));
+  let cantidadDias = parseInt(prompt("Ingrese cantidad de dias"));
+
+  if (isNaN(monto) || isNaN(cantidadDias)) {
+    aletr("No corresponde monto y/o dias");
+    bitacora.addRegistro(new RegistroBit("Credito abortado", loginActual));
+  } else {
+    if (!creditoTasaCero) {
+      let tasaAnual = 70 / 100;
+      let tasaDiaria = (tasaAnual / 365) * monto;
+      let interes = Math.ceil(tasaDiaria * cantidadDias);
+      let montoTotal = monto + interes;
+      alert(
+        "Monto solicitado: " + monto + "\n" + "Monto a devolver: " + montoTotal
+      );
+      bitacora.addRegistro(
+        new RegistroBit(
+          "Simulacin credito: monto total " + montoTotal,
+          loginActual
+        )
+      );
+    } else {
+      alert(
+        "Tenes un credito a tasa cero \n Monto solicitado: " +
+          monto +
+          "\n" +
+          "Monto a devolver " +
+          monto
+      );
+    }
+  }
+}
+function numeroAleatorio() {
+  if (yaProboSuerte) {
+    alert("Ya probaste tu suerte de hoy");
+  } else {
+    yaProboSuerte = true;
+    let numero = Math.ceil(Math.aleatorio() * 10);
+    console.log("Salio " + numero);
+    if (numero % 2 == 0) {
+      creditoTasaCero = true;
+      alert("Hoy tu credito es a tasa 0!!");
+    } else {
+      alert("Hoy no tuviste suerte!!");
+    }
+  }
+}
+
+function verBitacora() {
+  let bit = JSON.parse(localStorage.getItem(loginActual.getUsuario()));
+  if (bitacora != null) {
+    let bitacora = new Bitacora();
+    bitacora.registros = bit.registros;
+    bitacora.fecha = bit.fecha;
+    bitacora.mostrarBitacora();
+  }
+}
+
+function guardarEnLocalStorage() {
+  localStorage.setItem(loginActual.getUsuario(), JSON.stringify(bitacora));
+}
+
+function getCliente() {
+  let numeroDeCliente = prompt("Ingrese numero de cliente");
+  if (numeroDeCliente) {
+    let clienteEncontrado = coleccionCliente.find(
+      (c) => c.numeroDeCliente == numeroDeCliente
+    );
+    return clienteEncontrado;
+  }
+  return null;
 }
