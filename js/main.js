@@ -49,3 +49,62 @@ function checkearCredenciales(usuario, contraseña) {
     return null;
   }
 }
+
+function mostrarMenu() {
+  let flag = true;
+  while (flag) {
+    let mensaje = "Elija una opcion: ";
+    mensaje += "\n1) Transferencia ";
+    mensaje += "\n2) Plazo fijo ";
+    mensaje += "\n3) Ver Saldo ";
+    mensaje += "\n4) Ver Bitacora ";
+    mensaje += "\n5) Salir ";
+
+    let respuesta = prompt(mensaje);
+    switch (respuesta) {
+      case "1":
+        transferencia();
+        break;
+      case "2":
+        plazoFijo();
+        break;
+      case "3":
+        VerSaldo();
+        break;
+      case "4":
+        verBitacora();
+        break;
+      case "5":
+        alert("Gracias por elegirnos  ");
+        flag = false;
+        break;
+      case null:
+        alert("Gracias por elegirnos  ");
+        flag = false;
+        break;
+      default:
+        alert("Opcion inexistente");
+    }
+  }
+}
+
+function getCuentaCliente(origen, cliente) {
+  let mensaje = "Indique cuenta";
+  if (origen) {
+    mensaje += " origen:";
+  } else {
+    mensaje += " destino:";
+  }
+
+  mensaje += "\n 1) " + cliente.getcCuentaPesos().getDescripcion();
+  mensaje += "\n 2) " + cliente.getCuentaDolares().getDescripcion();
+
+  let respuesta = prompt(mensaje);
+  if (respuesta == 1) {
+    return cliente.getCuentaPesos();
+  }
+  if (respuesta == 2) {
+    return cliente.getCuentaDolares();
+  }
+  return false;
+}
